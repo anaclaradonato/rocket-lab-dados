@@ -1,0 +1,34 @@
+resources:
+  jobs:
+    CineData_Analytics_Pipeline:
+      name: CineData_Analytics_Pipeline
+      schedule:
+        quartz_cron_expression: 41 0 4 * * ?
+        timezone_id: America/Sao_Paulo
+        pause_status: UNPAUSED
+      tasks:
+        - task_key: to_Bronze
+          notebook_task:
+            notebook_path: /Workspace/Users/anacdonatomoreira@gmail.com/Landing_to_Bronze
+            source: WORKSPACE
+        - task_key: to_Silver
+          depends_on:
+            - task_key: to_Bronze
+          notebook_task:
+            notebook_path: /Workspace/Users/anacdonatomoreira@gmail.com/Bronze_to_Silver
+            source: WORKSPACE
+        - task_key: to_Gold
+          depends_on:
+            - task_key: to_Silver
+          notebook_task:
+            notebook_path: /Workspace/Users/anacdonatomoreira@gmail.com/Silver_to_Gold
+            source: WORKSPACE
+        - task_key: to_Analytics
+          depends_on:
+            - task_key: to_Gold
+          notebook_task:
+            notebook_path: /Workspace/Users/anacdonatomoreira@gmail.com/Gold_to_Analytics
+            source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
